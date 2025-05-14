@@ -3,14 +3,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const roomImages = document.querySelectorAll('.room-image');
     const roomSelect = document.getElementById('roomSelect');
     const reservationForm = document.getElementById('reservationForm');
-    const startDateTime = document.getElementById('startDateTime');
-    const endDateTime = document.getElementById('endDateTime');
+    const startDate = document.getElementById('startDate');
+    const startTime = document.getElementById('startTime');
+    const endDate = document.getElementById('endDate');
+    const endTime = document.getElementById('endTime');
     const reserverName = document.getElementById('reserverName');
     const reservationsContainer = document.getElementById('reservations');
     const downloadCSVButton = document.getElementById('downloadCSV');
 
     // 予約データを保存する配列
     let reservations = [];
+
+    // 時刻選択肢を生成（15分単位）
+    generate_time_options();
 
     // LocalStorageから予約データを読み込む
     load_reservations();
@@ -52,15 +57,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // フォームの値を取得
         const room = roomSelect.value;
-        const start = startDateTime.value;
-        const end = endDateTime.value;
+        const sDate = startDate.value;
+        const sTime = startTime.value;
+        const eDate = endDate.value;
+        const eTime = endTime.value;
         const reserver = reserverName.value;
 
         // バリデーション
-        if (!room || !start || !end || !reserver) {
+        if (!room || !sDate || !sTime || !eDate || !eTime || !reserver) {
             alert('全ての項目を入力してください。');
             return;
         }
+
+        // 日時をISO形式に変換
+        const start = `${sDate}T${sTime}:00`;
+        const end = `${eDate}T${eTime}:00`;
 
         // 開始時間と終了時間の比較
         if (new Date(start) >= new Date(end)) {
@@ -108,6 +119,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
         download_csv();
     });
+
+    // 時刻選択肢を生成する関数（15分単位）
+    function generate_time_options() {
+        const timeSlots = [];
+        // 9:00から21:00まで15分単位で選択肢を生成
+        for (let hour = 9; hour <= 21; hour++) {
+            const timeSlotMinutes = ['00', '15', '30', '45'];
+            const minutesToAdd = (hour === 21) ? ['00'] : timeSlotMinutes;
+            minutesToAdd.forEach(minute => {
+                timeSlots.push({
+                    value: `${hour.toString().padStart(2, '0')}:${minute}`,
+                    text: `${hour.toString().padStart(2, '0')}:${minute}`
+                });
+            });
+        }
+        const startTimeSelect = document.getElementById('startTime');
+        const endTimeSelect = document.getElementById('endTime');
+        timeSlots.forEach(slot => {
+            const startOption = document.createElement('option');
+            startOption.value = slot.value;
+            startOption.textContent = slot.text;
+            startTimeSelect.appendChild(startOption);
+            const endOption = document.createElement('option');
+            endOption.value = slot.value;
+            endOption.textContent = slot.text;
+            endTimeSelect.appendChild(endOption);
+        });
+    }
 
     // 予約の重複チェック関数
     function is_reservation_overlap(room, start, end) {
