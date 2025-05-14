@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let reservations = [];
 
     // LocalStorageから予約データを読み込む
-    loadReservations();
+    load_reservations();
 
     // 会議室画像のクリックイベント
     roomImages.forEach(image => {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // 予約の重複チェック
-        if (isReservationOverlap(room, start, end)) {
+        if (is_reservation_overlap(room, start, end)) {
             alert('指定した時間には既に予約があります。別の時間を選択してください。');
             return;
         }
@@ -87,10 +87,10 @@ document.addEventListener('DOMContentLoaded', function () {
         reservations.push(reservation);
 
         // LocalStorageに保存
-        saveReservations();
+        save_reservations();
 
         // 予約一覧を更新
-        updateReservationsList();
+        update_reservations_list();
 
         // フォームをリセット
         reservationForm.reset();
@@ -106,11 +106,11 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        downloadCSV();
+        download_csv();
     });
 
     // 予約の重複チェック関数
-    function isReservationOverlap(room, start, end) {
+    function is_reservation_overlap(room, start, end) {
         const startTime = new Date(start);
         const endTime = new Date(end);
 
@@ -130,11 +130,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 予約一覧を更新する関数
-    function updateReservationsList() {
+    function update_reservations_list() {
         reservationsContainer.innerHTML = '';
 
         if (reservations.length === 0) {
-            reservationsContainer.innerHTML = '<p>予約はありません。</p>';
+            reservationsContainer.innerHTML = '<p class="no-reservations"><i class="fas fa-info-circle"></i> 予約はありません。</p>';
             return;
         }
 
@@ -147,15 +147,31 @@ document.addEventListener('DOMContentLoaded', function () {
             const startDate = new Date(reservation.startDateTime);
             const endDate = new Date(reservation.endDateTime);
 
-            const formattedStartDate = formatDate(startDate);
-            const formattedEndDate = formatDate(endDate);
+            const formattedStartDate = format_date(startDate);
+            const formattedEndDate = format_date(endDate);
 
             const reservationElement = document.createElement('div');
             reservationElement.className = `reservation-item room-${reservation.room.toLowerCase()}`;
+
+            // 今日の予約かどうかを判定
+            const today = new Date();
+            const isToday = startDate.getDate() === today.getDate() &&
+                startDate.getMonth() === today.getMonth() &&
+                startDate.getFullYear() === today.getFullYear();
+
+            // 予約状態のバッジを追加
+            let statusBadge = '';
+            if (isToday) {
+                statusBadge = '<span class="badge today"><i class="fas fa-calendar-day"></i> 本日</span>';
+            }
+
             reservationElement.innerHTML = `
-                <p><strong>会議室:</strong> ${reservation.room}</p>
-                <p><strong>日時:</strong> ${formattedStartDate} 〜 ${formattedEndDate}</p>
-                <p><strong>予約者:</strong> ${reservation.reserverName}</p>
+                <div class="reservation-header">
+                    <h3><i class="fas fa-building"></i> 会議室 ${reservation.room}</h3>
+                    ${statusBadge}
+                </div>
+                <p><i class="far fa-clock"></i> <strong>日時:</strong> ${formattedStartDate} 〜 ${formattedEndDate}</p>
+                <p><i class="fas fa-user"></i> <strong>予約者:</strong> ${reservation.reserverName}</p>
             `;
 
             reservationsContainer.appendChild(reservationElement);
@@ -163,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 日付をフォーマットする関数
-    function formatDate(date) {
+    function format_date(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -174,21 +190,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // LocalStorageに予約データを保存する関数
-    function saveReservations() {
+    function save_reservations() {
         localStorage.setItem('roomReservations', JSON.stringify(reservations));
     }
 
     // LocalStorageから予約データを読み込む関数
-    function loadReservations() {
+    function load_reservations() {
         const savedReservations = localStorage.getItem('roomReservations');
         if (savedReservations) {
             reservations = JSON.parse(savedReservations);
-            updateReservationsList();
+            update_reservations_list();
         }
     }
 
     // CSVをダウンロードする関数
-    function downloadCSV() {
+    function download_csv() {
         // CSVのヘッダー
         const csvHeader = ['会議室', '開始日時', '終了日時', '予約者名', '予約作成日時'];
 
@@ -196,10 +212,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const csvRows = reservations.map(reservation => {
             return [
                 reservation.room,
-                formatDate(new Date(reservation.startDateTime)),
-                formatDate(new Date(reservation.endDateTime)),
+                format_date(new Date(reservation.startDateTime)),
+                format_date(new Date(reservation.endDateTime)),
                 reservation.reserverName,
-                formatDate(new Date(reservation.createdAt))
+                format_date(new Date(reservation.createdAt))
             ];
         });
 
@@ -218,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const link = document.createElement('a');
         link.setAttribute('href', url);
-        link.setAttribute('download', `会議室予約_${formatDateForFilename(new Date())}.csv`);
+        link.setAttribute('download', `会議室予約_${format_date_for_filename(new Date())}.csv`);
         link.style.display = 'none';
 
         document.body.appendChild(link);
@@ -227,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ファイル名用の日付フォーマット関数
-    function formatDateForFilename(date) {
+    function format_date_for_filename(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -238,5 +254,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 初期表示時に予約一覧を更新
-    updateReservationsList();
+    update_reservations_list();
 }); 

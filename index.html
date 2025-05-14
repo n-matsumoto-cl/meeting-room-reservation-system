@@ -4,28 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>会議室予約システム</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>会議室予約システム</h1>
+        <header>
+            <h1><i class="fas fa-calendar-check"></i> 会議室予約システム</h1>
+        </header>
         
         <div class="room-images">
             <div class="room-card" id="roomA">
-                <h2>会議室 A</h2>
+                <h2><i class="fas fa-door-open"></i> 会議室 A</h2>
                 <img src="https://www.creationline.com/tech-blog/cms_x3GWkuX/wp-content/uploads/2024/04/main1.webp" alt="会議室 A" data-room="A" class="room-image">
+                <div class="room-info">
+                    <p><i class="fas fa-users"></i> 最大収容人数: 8名</p>
+                    <p><i class="fas fa-tv"></i> プロジェクター完備</p>
+                </div>
             </div>
             <div class="room-card" id="roomB">
-                <h2>会議室 B</h2>
+                <h2><i class="fas fa-door-open"></i> 会議室 B</h2>
                 <img src="https://www.creationline.com/tech-blog/cms_x3GWkuX/wp-content/uploads/2024/04/main4.webp" alt="会議室 B" data-room="B" class="room-image">
+                <div class="room-info">
+                    <p><i class="fas fa-users"></i> 最大収容人数: 12名</p>
+                    <p><i class="fas fa-video"></i> Web会議設備あり</p>
+                </div>
             </div>
         </div>
         
         <div class="form-section">
-            <h2>予約フォーム</h2>
+            <h2><i class="fas fa-edit"></i> 予約フォーム</h2>
             <form id="reservationForm">
                 <div class="form-group">
-                    <label for="roomSelect">会議室:</label>
+                    <label for="roomSelect"><i class="fas fa-building"></i> 会議室:</label>
                     <select id="roomSelect" name="room" required>
                         <option value="">選択してください</option>
                         <option value="A">会議室 A</option>
@@ -34,30 +45,34 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="startDateTime">利用開始日時:</label>
+                    <label for="startDateTime"><i class="fas fa-hourglass-start"></i> 利用開始日時:</label>
                     <input type="datetime-local" id="startDateTime" name="startDateTime" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="endDateTime">利用終了日時:</label>
+                    <label for="endDateTime"><i class="fas fa-hourglass-end"></i> 利用終了日時:</label>
                     <input type="datetime-local" id="endDateTime" name="endDateTime" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="reserverName">予約者名:</label>
-                    <input type="text" id="reserverName" name="reserverName" required>
+                    <label for="reserverName"><i class="fas fa-user"></i> 予約者名:</label>
+                    <input type="text" id="reserverName" name="reserverName" placeholder="例: 山田太郎" required>
                 </div>
                 
-                <button type="submit" class="submit-btn">予約する</button>
+                <button type="submit" class="submit-btn"><i class="fas fa-check-circle"></i> 予約する</button>
             </form>
         </div>
         
         <div class="reservation-list">
-            <h2>予約一覧</h2>
-            <button id="downloadCSV" class="download-btn">CSVダウンロード</button>
+            <h2><i class="fas fa-list-alt"></i> 予約一覧</h2>
+            <button id="downloadCSV" class="download-btn"><i class="fas fa-download"></i> CSVダウンロード</button>
             <div id="reservations"></div>
         </div>
     </div>
+    
+    <footer>
+        <p>© 2024 会議室予約システム - フロントエンド実装</p>
+    </footer>
     
     <script src="script.js"></script>
 </body>
